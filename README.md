@@ -110,46 +110,59 @@ https://<wireguard-ip>:42069 (Cockpit)
 
 ## Architecture at a Glance
 
-```
-┌─ Boot Process ──────────────────────────┐
-│ Arch Linux kernel                       │
-│ ↓                                       │
-│ smachine-first-boot.service (once)      │
-│   ├─ Interactive menu (hostname, etc.)  │
-│   ├─ Format storage disk                │
-│   └─ Configure services                 │
-│ ↓                                       │
-│ smachine-autolaunch.service             │
-│   └─ Auto-login sudeste user            │
-│      └─ Launch ES-DE (RetroDECK)        │
-└─────────────────────────────────────────┘
+### Boot Process
 
-Disks
-├─ /dev/sda (system)
-│  ├─ /boot (EFI, 1GB)
-│  └─ / (root, btrfs, ~20GB)
-│
-└─ /dev/sdb (storage, optional)
-   └─ /retrodeck (btrfs, ROMs/saves)
-      ├─ roms/
-      ├─ saves/
-      ├─ bios/
-      ├─ screenshots/
-      └─ (other RetroDECK dirs)
+1. Arch Linux kernel
+2. `smachine-first-boot.service` (once)
+   * Interactive menu (hostname, etc.)
+   * Format storage disk
+   * Configure services
+3. `smachine-autolaunch.service`
+   * Auto-login sudeste user
+      * Launch ES-DE (RetroDECK)
 
-Services
-├─ smachine-first-boot.service (one-time)
-├─ smachine-autolaunch.service (every boot)
-├─ smachine-btrfs-snapshot.timer (weekly)
-├─ smachine-cockpit (web, port 42069)
-├─ wireguard-wg0 (if config provided)
-├─ samba (network shares)
-└─ sshd (remote shell)
 
-Users
-├─ sudeste (sudo access, runs RetroDECK)
-└─ games (Samba-only, ROM management)
-```
+### Disks
+
+1. `/dev/sda` (system)
+   * `/boot` (EFI, 1GB)
+   * `/` (root, btrfs, ~20GB)
+2. `/dev/sdb` (storage, optional)
+   * `/retrodeck` (btrfs, ROMs/saves)
+      * `/roms`
+      * `/saves`
+      * `/bios`
+      * `/screenshots`
+      * (other RetroDECK dirs)
+
+
+### Disks
+
+1. `/dev/sda` (system)
+   * `/boot` (EFI, 1GB)
+   * `/` (root, btrfs, ~20GB)
+2. `/dev/sdb` (storage, optional)
+   * `/retrodeck` (btrfs, ROMs/saves)
+      * `/roms`
+      * `/saves`
+      * `/bios`
+      * `/screenshots`
+      * (other RetroDECK dirs)
+
+### Services
+
+* `smachine-first-boot.service` (one-time)
+* `smachine-autolaunch` (every boot)
+* `smachine-btrfs-snapshot.timer` (weekly)
+* `smachine-cockpit` (web, port 42069)
+* `wireguard-wg0` (if config provided)
+* `samba` (network shares)
+* `sshd` (remote shell)
+
+### Users
+
+* `sudeste` (sudo access, runs RetroDECK)
+* `games` (Samba-only, ROM management)
 
 ---
 
