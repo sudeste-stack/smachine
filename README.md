@@ -121,21 +121,6 @@ https://<wireguard-ip>:42069 (Cockpit)
    * Auto-login sudeste user
       * Launch ES-DE (RetroDECK)
 
-
-### Disks
-
-1. `/dev/sda` (system)
-   * `/boot` (EFI, 1GB)
-   * `/` (root, btrfs, ~20GB)
-2. `/dev/sdb` (storage, optional)
-   * `/retrodeck` (btrfs, ROMs/saves)
-      * `/roms`
-      * `/saves`
-      * `/bios`
-      * `/screenshots`
-      * (other RetroDECK dirs)
-
-
 ### Disks
 
 1. `/dev/sda` (system)
