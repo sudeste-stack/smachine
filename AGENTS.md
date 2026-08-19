@@ -41,6 +41,19 @@ AI must:
 - Check documentation alignment before & after every code change
 - Update docs *after* code is written, not before
 - Flag outdated docs discovered during implementation
+- Work on a branch named `clanker-*` (see principle 5)
+
+### 5. Branch Naming (Mandatory)
+
+All agents make changes on branches whose name starts with `clanker-`.
+Never commit directly to `main`.
+
+```
+good:  clanker-gpu-detection
+       clanker-fix-snapshot-timer
+bad:   fix-stuff
+       feature/gpu
+```
 
 ---
 
