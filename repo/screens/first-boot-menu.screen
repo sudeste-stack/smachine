@@ -1,0 +1,58 @@
+# smachine-first-boot — canonical prompt spec
+# Implemented by: smachine-first-boot.service (installer-provided)
+# Described in:   docs/SETUP.md
+
+style: gum input/confirm/select, one prompt per screen, arrow keys, Enter to proceed, Esc to go back (no cancel on final step — warn and power off)
+
+[P1 hostname]
+  type:    input
+  prompt:  "Set hostname"
+  default: smachine-01
+  valid:   [a-z0-9-]{1,63}
+  effect:  hostnamectl set-hostname <value>; /etc/hosts; Samba server string; WireGuard ListenAddress comment
+
+[P2 network mode]
+  type:    select
+  prompt:  "How does this machine get an IP?"
+  options: [DHCP, Static IP]
+  DHCP:    systemd-networkd, use DHCP=yes, end
+  Static:  continue to [P2a]
+
+[P2a static IP]
+  type:    input (4 fields)
+  prompt:  "IP / Prefix / Gateway / DNS"
+  defaults: (empty; validate each)
+  effect:  /etc/systemd/network/10-smachine.net
+
+[P3 storage]
+  type:    select
+  prompt:  "Where do ROMs and saves live?"
+  options: [Single disk (system + games), Dual disk (dedicated storage disk)]
+  single:  btrfs on <system disk>, /retrodeck subvolumes: roms saves bios screenshots
+  dual:    ask <storage disk> via device select (list by model+size, warn it will be WIPED), btrfs, /retrodeck + subvolumes
+  warning: "This will wipe all data on the selected disk(s)." — confirm with y/N
+
+[P4 wireguard]
+  type:    select
+  prompt:  "WireGuard VPN for this machine?"
+  options: [No, Yes — I have a .conf file]
+  yes:     file picker over mounted media (USB / live-USB path)
+  effect:  install to /etc/wireguard/wg0.conf, enable wg-quick@wg0
+
+[P5 samba]
+  type:    confirm
+  prompt:  "Share ROMs over the network (Samba, \\host\roms)?"
+  default: yes
+  effect:  enable smbd, add 'games' to smbpasswd
+
+[P6 ssh]
+  type:    confirm
+  prompt:  "Allow SSH login as sudeste?"
+  default: yes
+  effect:  enable sshd; set password for sudeste and games (default = username, flagged for change)
+
+[final]
+  type:    confirm
+  prompt:  "Everything looks right? Start the install. This wipes the selected disks."
+  default: no
+  effect:  run installer pipeline, reboot

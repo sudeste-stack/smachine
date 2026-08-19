@@ -76,78 +76,20 @@ curl -fsSL https://raw.githubusercontent.com/sudeste-stack/smachine/main/arch-re
 
 ## After Installation
 
-### Add Games
-
-**From your PC (Windows/Mac/Linux):**
-```
-Samba share: \\<machine-ip>\roms
-User: games
-Add your ROM files
-```
-
-**Or via SSH (if you're technical):**
-```bash
-ssh sudeste@<machine-ip>
-# Use RetroDECK Configurator to organize
-```
-
-### Remote Access (Optional)
-
-**If you set up WireGuard:**
-```bash
-ssh sudeste@<wireguard-ip>
-# or web dashboard:
-https://<wireguard-ip>:42069 (Cockpit)
-```
-
-### Keep It Running
-
-- **Arch updates:** Run `pacman -Syu` when you login. Snapshots auto-save before updates.
-- **RetroDECK updates:** Automatic. Flatpak handles it.
-- **Backups:** Automatic weekly snapshots (last 14 kept). Rollback one-liner if needed.
+- **Add ROMs** – from your PC over Samba: `\\<machine>\roms`, user `games`.
+- **Remote access (optional)** – SSH or Cockpit on port 42069, via WireGuard – see [CONFIGURATION.md](./docs/CONFIGURATION.md).
+- **Keep it running** – you control Arch updates, RetroDECK self-updates, weekly btrfs snapshots with one-command rollback – see [MAINTENANCE.md](./docs/MAINTENANCE.md).
 
 ---
 
 ## Architecture at a Glance
 
-### Boot Process
+- Boots straight into ES-DE — no desktop, no login prompt.
+- Btrfs disks with weekly snapshots; one command to roll back a broken update.
+- Two users: `sudeste` (admin) and `games` (Samba-only content).
+- WireGuard, Cockpit, Samba, SSH all optional; standalone by default.
 
-1. Arch Linux kernel
-2. `smachine-first-boot.service` (once)
-   * Interactive menu (hostname, etc.)
-   * Format storage disk
-   * Configure services
-3. `smachine-autolaunch.service`
-   * Auto-login sudeste user
-      * Launch ES-DE (RetroDECK)
-
-### Disks
-
-1. `/dev/sda` (system)
-   * `/boot` (EFI, 1GB)
-   * `/` (root, btrfs, ~20GB)
-2. `/dev/sdb` (storage, optional)
-   * `/retrodeck` (btrfs, ROMs/saves)
-      * `/roms`
-      * `/saves`
-      * `/bios`
-      * `/screenshots`
-      * (other RetroDECK dirs)
-
-### Services
-
-* `smachine-first-boot.service` (one-time)
-* `smachine-autolaunch` (every boot)
-* `smachine-btrfs-snapshot.timer` (weekly)
-* `smachine-cockpit` (web, port 42069)
-* `wireguard-wg0` (if config provided)
-* `samba` (network shares)
-* `sshd` (remote shell)
-
-### Users
-
-* `sudeste` (sudo access, runs RetroDECK)
-* `games` (Samba-only, ROM management)
+Full spec — boot flow, disks, services, users: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)
 
 ---
 
